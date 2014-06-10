@@ -1,0 +1,6 @@
+<launch>
+
+	<include file="$(find velo_pr2)/launch/archie_robot.launch"/>
+	<include file="/etc/ros/groovy/openni_head.launch"/>
+
+</launch>
