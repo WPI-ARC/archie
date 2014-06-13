@@ -25,27 +25,29 @@ class ObjectStatePublisher:
     def __init__(self):
         #robot = xml.dom.minidom.parseString(description_file).getElementsByTagName('robot')[0]
         
-        self.object_pub = rospy.Publisher(rospy.get_namespace() + "visualization_marker", Marker)
+#        self.object_pub = rospy.Publisher(rospy.get_namespace() + "visualization_marker", Marker)
+        self.object_pub = rospy.Publisher(rospy.get_namespace() + "visualization_marker_array", MarkerArray)
 
     def spawn_object1(self):
         #rospy.logdebug( "spawn objects" )
         
         listener = tf.TransformListener()
-        rate = rospy.Rate(10.0)
+        rate = rospy.Rate(40.0)
 
         msg1 = Marker()
         msg1.header.frame_id = "world"
         msg1.header.stamp = rospy.Time.now()
         msg1.ns = "my_namespace"
-        msg1.id = 0
+        msg1.id = 1
         msg1.type = Marker.MESH_RESOURCE
         msg1.action = Marker.ADD
+        msg1.lifetime = rospy.Time(0.3)
         
         msg1.color.a = 1.0
         msg1.color.r = 0.8
         msg1.color.g = 0.1
         msg1.color.b = 0.5
-        msg1.mesh_resource = "package://touch_tomorrow_demo/models/elephant.dae" 
+        msg1.mesh_resource = "package://touch_tomorrow_demo/models/table.dae" # elephant.dae" 
       
         scale_factor_1 = 0.8
 
@@ -53,15 +55,16 @@ class ObjectStatePublisher:
         msg2.header.frame_id = "world"
         msg2.header.stamp = rospy.Time.now()
         msg2.ns = "my_namespace"
-        msg2.id = 0
+        msg2.id = 2
         msg2.type = Marker.MESH_RESOURCE
         msg2.action = Marker.ADD
+        msg2.lifetime = rospy.Time(0.3)
         
         msg2.color.a = 1.0
         msg2.color.r = 0.9
         msg2.color.g = 0.01
         msg2.color.b = 0.05
-        msg2.mesh_resource = "package://touch_tomorrow_demo/models/chevy.dae"
+        msg2.mesh_resource = "package://touch_tomorrow_demo/models/table.dae"
 
         scale_factor_2 = 1.0
 
@@ -69,9 +72,10 @@ class ObjectStatePublisher:
         msg3.header.frame_id = "world"
         msg3.header.stamp = rospy.Time.now()
         msg3.ns = "my_namespace"
-        msg3.id = 0
+        msg3.id = 3
         msg3.type = Marker.MESH_RESOURCE
         msg3.action = Marker.ADD
+        msg3.lifetime = rospy.Time(0.3)
         
         msg3.color.a = 1.0
         msg3.color.r = 0.8
@@ -85,9 +89,12 @@ class ObjectStatePublisher:
         object_2_in_scene = 0
         object_3_in_scene = 0
 
-        min_seen = 10000
+        min_seen = 100
 
         while not rospy.is_shutdown():
+
+            markerArray = MarkerArray()
+            markerArray.markers = []
 
             try: # ELEPHANT
                 now = rospy.Time.now()
@@ -137,12 +144,13 @@ class ObjectStatePublisher:
 
                 # Offset in world
                 pose = Pose()
-                pose.position.x =  -3.8 #+ offset_x -0.3 +
-                pose.position.y =  -2.  #+ offset_y -11.3 +
-                pose.position.z =  -1.5 #+ offset_z -3.7 +
+                pose.position.x =  0# -3.8 #+ offset_x -0.3 +
+                pose.position.y =  0#-2.  #+ offset_y -11.3 +
+                pose.position.z =  0#-1.5 #+ offset_z -3.7 +
                 msg1.pose = ComposePoses( msg1.pose, pose )
 
                 # self.object_pub.publish( msg1 )
+                markerArray.markers.append( msg1 )
 
             if object_2_in_scene > min_seen : # CAMARO
 
@@ -161,11 +169,12 @@ class ObjectStatePublisher:
                 pose.position.x =  -1.8 #+ offset_x -0.3 +
                 pose.position.y =  -1.9  #+ offset_y -11.3 +
                 pose.position.z =  0.0 #+ offset_z -3.7 +
-                msg2.pose = ComposePoses( msg2.pose, pose )
+                #msg2.pose = ComposePoses( msg2.pose, pose )
                 # Offset in object frame
                 # mat = MakeTransformMatrix(rodrigues([pi/2, 0, 0]), transpose(matrix([0, 0, 0])))
                 # msg1.pose = ComposePoses( PoseFromMatrix( mat ), msg1.pose )
                 # self.object_pub.publish( msg2 )
+                markerArray.markers.append( msg2 )
 
             if object_3_in_scene > min_seen : # DRAGON
 
@@ -191,9 +200,15 @@ class ObjectStatePublisher:
                 # mat = MakeTransformMatrix(rodrigues([pi/2, 0, 0]), transpose(matrix([0, 0, 0])))
                 # msg1.pose = ComposePoses( PoseFromMatrix( mat ), msg1.pose )
 
-                self.object_pub.publish( msg3 )
+#                self.object_pub.publish( msg3 )
+                markerArray.markers.append( msg3 )
 
-            
+            if len(markerArray.markers) > 0:
+                self.object_pub.publish(markerArray)
+                print "publish markers"
+            rospy.sleep(0.01)
+
+
     def loop(self, hz=1.):
         r = rospy.Rate(hz) 
         while not rospy.is_shutdown():
