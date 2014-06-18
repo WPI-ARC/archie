@@ -47,9 +47,10 @@ class ObjectStatePublisher:
         msg1.color.r = 0.8
         msg1.color.g = 0.1
         msg1.color.b = 0.5
-        msg1.mesh_resource = "package://touch_tomorrow_demo/models/table.dae" # elephant.dae" 
+        msg1.mesh_use_embedded_materials = True
+        msg1.mesh_resource = "package://touch_tomorrow_demo/models/helicopter.dae" 
       
-        scale_factor_1 = 0.8
+        scale_factor_1 = 0.01#0.8
 
         msg2 = Marker()
         msg2.header.frame_id = "world"
@@ -64,7 +65,7 @@ class ObjectStatePublisher:
         msg2.color.r = 0.9
         msg2.color.g = 0.01
         msg2.color.b = 0.05
-        msg2.mesh_resource = "package://touch_tomorrow_demo/models/table.dae"
+        msg2.mesh_resource = "package://touch_tomorrow_demo/models/helicopter.dae"
 
         scale_factor_2 = 1.0
 
@@ -144,9 +145,9 @@ class ObjectStatePublisher:
 
                 # Offset in world
                 pose = Pose()
-                pose.position.x =  0# -3.8 #+ offset_x -0.3 +
-                pose.position.y =  0#-2.  #+ offset_y -11.3 +
-                pose.position.z =  0#-1.5 #+ offset_z -3.7 +
+                pose.position.x = -0.4 #-3.8 #+ offset_x -0.3 + #-0.4 (helicopter)
+                pose.position.y = -0.6 #-2.  #+ offset_y -11.3 + #-0.6 (helicopter)
+                pose.position.z = -0.45 #-1.5 #+ offset_z -3.7 + # -0.45 (helicopter)
                 msg1.pose = ComposePoses( msg1.pose, pose )
 
                 # self.object_pub.publish( msg1 )
@@ -174,7 +175,7 @@ class ObjectStatePublisher:
                 # mat = MakeTransformMatrix(rodrigues([pi/2, 0, 0]), transpose(matrix([0, 0, 0])))
                 # msg1.pose = ComposePoses( PoseFromMatrix( mat ), msg1.pose )
                 # self.object_pub.publish( msg2 )
-                markerArray.markers.append( msg2 )
+                # markerArray.markers.append( msg2 )
 
             if object_3_in_scene > min_seen : # DRAGON
 
